@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+
+HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
+WORK_DIR = Dir.pwd
+
+require 'optparse'
+require HOME_DIR + '/lib/config'
+
+options = load_config(HOME_DIR + '/etc/tim.conf');
+
+optparse = OptionParser.new do|opts|
+    opts.banner = "Usage: tim command [options]"
+    opts.on( '-h', '--help', 'Display this screen' ) do
+        puts opts
+        exit
+    end
+end
+
+optparse.parse!
+
+if options['projects_dir']
+    options['projects_dir'] = File.expand_path(options['projects_dir'])
+end
+
+project = nil
+project_path = nil
+if WORK_DIR.match(options['projects_dir'])
+    project_path = WORK_DIR.slice(options['projects_dir'].length + 1, options['projects_dir'].length)
+    project = project_path.split('/')[0]
+    project_path = options['projects_dir'] + '/' + project
+end
+
+if !project_path
+    puts "Project not found."
+    exit 2
+end
+
+command = ARGV[0]
+case command
+    when /^[a-z0-9_]+$/
+        if File.exist?(project_path + '/.tim/' + command)
+            exec(project_path + '/.tim/' + command)
+        elsif
+            puts "Unknown command."
+            exit 1
+        end
+    else
+        puts "Unknown command."
+        exit 1
+end

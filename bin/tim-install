@@ -1,0 +1,49 @@
+#!/bin/bash
+
+TIM_HOME=~/.tim
+TIM_CONFIG=etc/tim.conf
+TIM_COMMAND=tim
+
+function print_message()
+{
+    echo ""
+    echo "$(tput setaf 2)> ${1}$(tput sgr0)"
+}
+
+function print_error_and_abort()
+{
+    echo ""
+    echo "$(tput setaf 1)> ${1}$(tput sgr0)"
+    exit 1
+}
+
+function checkout_tim()
+{
+    print_message "Creating Tim's Home and files at $TIM_HOME..."
+    mkdir $TIM_HOME
+    git clone git@github.com:emartech/tim.git $TIM_HOME
+}
+
+function update_tim()
+{
+    print_message "Updating Tim at $TIM_HOME..."
+    git --work-tree=$TIM_HOME pull --rebase
+}
+
+if [[ ! -d $TIM_HOME ]]; then
+    checkout_tim
+else
+    update_tim
+fi
+
+if [[ ! -e $TIM_HOME/$TIM_CONFIG ]]; then
+    if [[ ! -e $TIM_HOME/$TIM_CONFIG.default ]]; then
+        print_error_and_abort "Cannot create a configuration file for Tim."
+    fi
+    cp $TIM_HOME/$TIM_CONFIG.default $TIM_HOME/$TIM_CONFIG
+fi
+
+if ! command -v $TIM_COMMAND &>/dev/null
+then
+    print_error_and_abort "Please install tim."
+fi
