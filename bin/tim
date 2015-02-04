@@ -30,19 +30,19 @@ if WORK_DIR.match(options['projects_dir'])
     project_path = options['projects_dir'] + '/' + project
 end
 
-if !project_path
-    puts "Project not found."
-    exit 2
-end
-
-command = ARGV[0]
+command = ARGV.shift
 case command
-    when /^[a-z0-9_]+$/
-        if File.exist?(project_path + '/.tim/' + command)
+    when /^[a-z0-9_-]+$/
+        ENV['TIM_PROJECTS_DIR'] = options['projects_dir']
+        if project_path && File.exist?(project_path + '/.tim/' + command)
             exec(project_path + '/.tim/' + command)
         elsif
-            puts "Unknown command."
-            exit 1
+            if File.exist?(HOME_DIR + '/scripts/' + command)
+                exec(HOME_DIR + '/scripts/' + command, *ARGV)
+            elsif
+                puts "Unknown command."
+                exit 1
+            end
         end
     else
         puts "Unknown command."

@@ -3,17 +3,21 @@
 TIM_HOME=~/.tim
 TIM_CONFIG=etc/tim.conf
 TIM_COMMAND=tim
+CHEERS=$'\360\237\215\271'
 
 function print_message()
 {
-    echo ""
-    echo "$(tput setaf 2)> ${1}$(tput sgr0)"
+    echo -e "\n$(tput setaf 2)> ${1}$(tput sgr0)"
+}
+
+function print_ok()
+{
+    echo "$(tput setaf 3)OK$(tput sgr0)"
 }
 
 function print_error_and_abort()
 {
-    echo ""
-    echo "$(tput setaf 1)> ${1}$(tput sgr0)"
+    echo -e "\n$(tput setaf 1)> ${1}$(tput sgr0)\n"
     exit 1
 }
 
@@ -22,12 +26,38 @@ function checkout_tim()
     print_message "Creating Tim's Home and files at $TIM_HOME..."
     mkdir $TIM_HOME
     git clone https://github.com/emartech/tim.git $TIM_HOME
+    print_ok
 }
 
 function update_tim()
 {
     print_message "Updating Tim at $TIM_HOME..."
     git --work-tree=$TIM_HOME pull --rebase
+    print_ok
+}
+
+function create_default_configuration()
+{
+    if [[ ! -e $TIM_HOME/$TIM_CONFIG ]]; then
+        print_message "Creating a default configuration file."
+        cp $TIM_HOME/$TIM_CONFIG.default $TIM_HOME/$TIM_CONFIG || print_error_and_abort "Cannot create a configuration file for Tim."
+    fi
+}
+
+function make_available_from_bash()
+{
+    print_message "Checking tim command availability."
+    if ! grep tim-shell ~/.bashrc &>/dev/null
+    then
+        echo -e "\nsource ~/.tim/bin/tim-shell\n" >> ~/.bashrc || print_error_and_abort "Cannot patch ~/.bashrc to include tim-shell."
+    fi
+    source ~/.tim/bin/tim-shell;
+
+    if ! command -v $TIM_COMMAND &>/dev/null
+    then
+        print_error_and_abort "The tim command is not available, and fixing ~/.bashrc seems to be not working."
+    fi
+    print_ok
 }
 
 if [[ ! -d $TIM_HOME ]]; then
@@ -36,14 +66,8 @@ else
     update_tim
 fi
 
-if [[ ! -e $TIM_HOME/$TIM_CONFIG ]]; then
-    if [[ ! -e $TIM_HOME/$TIM_CONFIG.default ]]; then
-        print_error_and_abort "Cannot create a configuration file for Tim."
-    fi
-    cp $TIM_HOME/$TIM_CONFIG.default $TIM_HOME/$TIM_CONFIG
-fi
+create_default_configuration
 
-if ! command -v $TIM_COMMAND &>/dev/null
-then
-    print_error_and_abort "Please install tim."
-fi
+make_available_from_bash
+
+echo -e "\n$(tput setaf 5)Tim is ready to serve you. Have fun!\nTry starting a new console and typing \"tim\" to start. $CHEERS $(tput sgr0)\n"
