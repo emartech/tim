@@ -35,7 +35,7 @@ case command
     when /^[a-z0-9_-]+$/
         ENV['TIM_PROJECTS_DIR'] = options['projects_dir']
         if project_path && File.exist?(project_path + '/.tim/' + command)
-            exec(project_path + '/.tim/' + command)
+            exec(project_path + '/.tim/' + command, *ARGV)
         elsif
             if File.exist?(HOME_DIR + '/scripts/' + command)
                 exec(HOME_DIR + '/scripts/' + command, *ARGV)
