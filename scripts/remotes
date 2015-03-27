@@ -39,9 +39,9 @@ class TimRemotes
 
 
 
-  def setup(user, repo_name)
+  def setup(repo_name)
     # Clone repository
-    ssh_url = (@github.repos.get user: user, repo: repo_name)['ssh_url']
+    ssh_url = (@github.repos.get user: @user, repo: repo_name)['ssh_url']
     projects_path = "#{File.expand_path(@options['projects_dir'])}/#{repo_name}"
     output = %x[git clone #{ssh_url} #{projects_path} 2>&1]
     success = $?.success?
@@ -81,7 +81,7 @@ when nil
 when COMMANDS[0]
   remotes.list_repos
 when COMMANDS[1]
-  remotes.setup(ARGV[0], ARGV[1])
+  remotes.setup(ARGV[0])
 when COMMANDS[2]
   remotes.init
 else
