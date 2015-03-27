@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/ruby
 
 HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
 WORK_DIR = Dir.pwd
