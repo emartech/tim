@@ -3,10 +3,14 @@
 HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
 
 require 'github_api'
+require 'json'
 require HOME_DIR + '/lib/config'
 
 
 class TimRemotes
+  REPO_LIST_FILE = "#{Dir.home}/.tim/etc/remotes/repo_list.json"
+
+
 
   def initialize
     @options = load_config(HOME_DIR + '/etc/tim.conf');
@@ -18,12 +22,19 @@ class TimRemotes
 
 
 
-  def list_repos
+  def init
     repo_names = (@github.repos.list org: @user).map do |repo|
       { name: repo.name, url: repo.html_url, description: repo.description }
     end
     repo_names = repo_names.keep_if { |repo| has_tim?(repo[:name]) }
-    puts repo_names.to_json
+    File.open(REPO_LIST_FILE, 'w') { |file| file.write(repo_names.to_json) }
+  end
+
+
+
+  def list_repos
+    repo_list = File.read(REPO_LIST_FILE)
+    puts(JSON.parse(repo_list))
   end
 
 
@@ -58,7 +69,7 @@ class TimRemotes
 
 end
 
-COMMANDS = %w(list setup)
+COMMANDS = %w(list setup init)
 
 remotes = TimRemotes.new
 
@@ -71,6 +82,8 @@ when COMMANDS[0]
   remotes.list_repos
 when COMMANDS[1]
   remotes.setup(ARGV[0], ARGV[1])
+when COMMANDS[2]
+  remotes.init
 else
   puts 'Unknown command...'
   exit 1
