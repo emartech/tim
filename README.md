@@ -1,7 +1,7 @@
 # tim
 Tim Is Money. Tim is Time. Time is Money.
 
-It's an one-click developer environment setup via a web interface
+It's a one-click developer environment setup via a web interface
 
 
 ###Installation
