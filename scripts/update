@@ -10,3 +10,4 @@ function print_message()
 cd $TIM_HOME
 print_message "Updating tim..."
 git pull --rebase
+bundle install

@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
+COMMANDS = %w(list)
+
+require 'github_api'
+require HOME_DIR + '/lib/config'
+
+
+def list_repos
+  options = load_config(HOME_DIR + '/etc/tim.conf');
+  github = Github.new(oauth_token: options['github_token'])
+  repo_names = (github.repos.list user: options['github_user']).map { |repo| repo.name }
+  puts repo_names.to_json
+end
+
+
+
+command = ARGV.shift
+case command
+when nil
+  puts 'Available commands are:'
+  COMMANDS.each { |command| puts "\t#{command}" }
+when 'list'
+  list_repos
+else
+  puts 'Unknown command...'
+  exit 1
+end
