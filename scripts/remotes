@@ -34,7 +34,7 @@ class TimRemotes
 
   def list_repos
     repo_list = File.read(REPO_LIST_FILE)
-    puts(JSON.parse(repo_list))
+    puts(JSON.parse(repo_list).to_json)
   end
 
 
