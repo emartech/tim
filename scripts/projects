@@ -21,73 +21,19 @@ end
 
 optparse.parse!
 
-def read_projects_json
-    config = {}
-    Dir.glob(PROJECTS_DIR + "**/*.json") do |file|
-        JSON.parse(File.read(file)).each { |project_name, project_config|
-            config[project_name] = project_config
-        }
-    end
-    config
-end
-
-def get_project_config(project)
-    available_projects = read_projects_json
-    if not available_projects[project]
-        puts "Project not found."
-        exit 1
-    end
-    return available_projects[project]
-end
-
-def get_list_of_projects
-    read_projects_json.keys
-end
-
-def checkout_project(project_dir, config)
-    repo = config['repo']
-    repo_type = config['repo_type']
-    if not File.directory?(project_dir)
-        FileUtils.mkdir_p project_dir
-        if repo_type == 'svn'
-            system('svn', 'checkout', repo, project_dir)
-        end
-        if repo_type == 'git'
-            if not system('git', 'clone', repo, project_dir)
-                system('git', '--work-tree=' + project_dir, 'pull', '--rebase')
-            end
-        end
-    else
-        puts "Project directory already exists"
-    end
+def get_list_of_projects(options)
+  repo_paths = Dir.glob(options["projects_dir"] + "*/.git").map{ |dir| File.expand_path("..", dir) }
+  repo_paths.select!{ |path| File.exist? path + "/.tim" }
+  repo_paths.each do |repo|
+    puts ' * ' + File.basename(repo)
+  end
 end
 
 command = ARGV.shift
 case command
-    when 'init'
-        repo_name = repo_short_name = ARGV[0]
-        if repo_name.match(/[a-z0-9_\/-]/)
-            if not repo_name.match(/\//)
-                repo_name = repo_short_name + '/tim-projects'
-            end
-            repo_url = 'git@github.com:' + repo_name + '.git'
-            FileUtils.mkdir_p PROJECTS_DIR
-            puts system('git', 'clone', repo_url, PROJECTS_DIR + repo_short_name.sub('/', '-'));
-            exit
-        else
-            puts "Bad Github repository name: " + repo
-            exit 1
-        end
     when 'list'
         puts "Available projects:"
-        puts get_list_of_projects
-    when 'setup'
-        project = ARGV[0]
-        config = get_project_config(project)
-        project_dir = ENV['TIM_PROJECTS_DIR'] + '/' + config['project_name']
-        checkout_project(project_dir, config)
-        Dir.chdir(project_dir)
-        system(project_dir + '/' + config['setup']['script'])
+        get_list_of_projects(options)
     else
         puts "Unknown command..."
         exit 1
