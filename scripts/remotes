@@ -18,7 +18,7 @@ class TimRemotes
 
 
   def list_repos
-    github = Github.new(oauth_token: @token)
+    github = Github.new(oauth_token: @token, auto_pagination: true)
     repo_names = (github.repos.list org: @user).map { |repo| repo.name }
     repo_names = repo_names.keep_if { |repo_name| has_tim?(repo_name) }
     puts repo_names.to_json
