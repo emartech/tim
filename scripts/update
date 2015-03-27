@@ -5,4 +5,5 @@ HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
 puts "Updating tim..."
 
 Dir.chdir(HOME_DIR)
-system('git', 'pull', '--rebase');
+system('git', 'pull', '--rebase')
+
