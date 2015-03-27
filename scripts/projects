@@ -25,13 +25,12 @@ def get_list_of_projects(options)
   repo_paths = Dir.glob(File.expand_path(options["projects_dir"]) + "/*/.git").map{ |dir| File.expand_path("..", dir) }
   repo_paths.concat Dir.glob(File.expand_path(options["projects_dir"]) + "/*/.svn").map{ |dir| File.expand_path("..", dir) }
   repo_paths.select!{ |path| File.exist? path + "/.tim" }
-  puts repo_paths.map{ |repo| File.basename repo }.to_s
+  puts repo_paths.map{ |repo| {"name" => File.basename(repo), "path" => repo} }.to_json
 end
 
 command = ARGV.shift
 case command
     when 'list'
-        puts "Available projects:"
         get_list_of_projects(options)
     else
         puts "Unknown command..."
