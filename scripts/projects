@@ -40,6 +40,10 @@ def get_project_config(project)
     return available_projects[project]
 end
 
+def get_list_of_projects
+    read_projects_json.keys
+end
+
 def checkout_project(project_dir, config)
     repo = config['repo']
     repo_type = config['repo_type']
@@ -74,6 +78,9 @@ case command
             puts "Bad Github repository name: " + repo
             exit 1
         end
+    when 'list'
+        puts "Available projects:"
+        puts get_list_of_projects
     when 'setup'
         project = ARGV[0]
         config = get_project_config(project)
