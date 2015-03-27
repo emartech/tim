@@ -1,28 +1,54 @@
 #!/usr/bin/env ruby
 
 HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
-COMMANDS = %w(list)
 
 require 'github_api'
 require HOME_DIR + '/lib/config'
 
 
-def list_repos
-  options = load_config(HOME_DIR + '/etc/tim.conf');
-  github = Github.new(oauth_token: options['github_token'])
-  repo_names = (github.repos.list user: options['github_user']).map { |repo| repo.name }
-  puts repo_names.to_json
+class TimRemotes
+
+  def initialize
+    @options = load_config(HOME_DIR + '/etc/tim.conf');
+    @token = @options['github_token']
+    @user = @options['github_user']
+    @contents = Github::Client::Repos::Contents.new(oauth_token: @token)
+  end
+
+
+
+  def list_repos
+    github = Github.new(oauth_token: @token)
+    repo_names = (github.repos.list org: @user).map { |repo| repo.name }
+    repo_names = repo_names.keep_if { |repo_name| has_tim?(repo_name) }
+    puts repo_names.to_json
+  end
+
+
+
+  def has_tim?(repo_name)
+    begin
+      @contents.find(@user, repo_name, '.tim')
+    rescue
+      false
+    else
+      true
+    end
+  end
+
 end
 
+COMMANDS = %w(list)
 
+remotes = TimRemotes.new
 
 command = ARGV.shift
 case command
 when nil
   puts 'Available commands are:'
-  COMMANDS.each { |command| puts "\t#{command}" }
+  COMMANDS.each { |command| puts "  #{command}" }
 when 'list'
-  list_repos
+  remotes.list_repos
 else
   puts 'Unknown command...'
   exit 1
