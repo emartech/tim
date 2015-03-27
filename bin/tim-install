@@ -23,13 +23,13 @@ function print_error_and_abort()
 
 function check_dependencies()
 {
-    git --version 2>&1 >/dev/null
+    git --version &>/dev/null
     GIT_IS_AVAILABLE=$?
     if [ $GIT_IS_AVAILABLE -ne 0 ]; then
         print_error_and_abort "Tim needs git to be installed."
     fi
 
-    ruby --version 2>&1 >/dev/null
+    ruby --version &>/dev/null
     RUBY_IS_AVAILABLE=$?
     if [ $GIT_IS_AVAILABLE -ne 0 ]; then
         print_error_and_abort "Tim needs ruby to be installed."
