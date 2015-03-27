@@ -7,6 +7,6 @@ function print_message()
   echo -e "\n$(tput setaf 2)> ${1}$(tput sgr0)"
 }
 
-cd TIM_HOME
+cd $TIM_HOME
 print_message "Updating tim..."
 git pull --rebase
