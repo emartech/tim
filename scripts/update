@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
-HOME_DIR = File.expand_path(File.dirname(__FILE__) + '/../')
+home_dir = File.expand_path(File.dirname(__FILE__) + '/../')
 
-puts "Updating tim..."
-
-Dir.chdir(HOME_DIR)
-system('git', 'pull', '--rebase')
-
+Dir.chdir(home_dir)
+system(home_dir + '/bin/tim-update')

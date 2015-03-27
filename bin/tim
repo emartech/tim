@@ -6,7 +6,7 @@ WORK_DIR = Dir.pwd
 require 'optparse'
 require HOME_DIR + '/lib/config'
 
-options = load_config(HOME_DIR + '/etc/tim.conf');
+options = load_config(HOME_DIR + '/etc/tim.conf')
 
 optparse = OptionParser.new do|opts|
     opts.banner = "Usage: tim command [options]"
