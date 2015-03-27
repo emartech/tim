@@ -22,7 +22,8 @@ end
 optparse.parse!
 
 def get_list_of_projects(options)
-  repo_paths = Dir.glob(options["projects_dir"] + "*/.git").map{ |dir| File.expand_path("..", dir) }
+  repo_paths = Dir.glob(File.expand_path(options["projects_dir"]) + "/*/.git").map{ |dir| File.expand_path("..", dir) }
+  repo_paths.concat Dir.glob(File.expand_path(options["projects_dir"]) + "/*/.svn").map{ |dir| File.expand_path("..", dir) }
   repo_paths.select!{ |path| File.exist? path + "/.tim" }
   repo_paths.each do |repo|
     puts ' * ' + File.basename(repo)
