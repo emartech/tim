@@ -1,6 +1,9 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 
-home_dir = File.expand_path(File.dirname(__FILE__) + '/../')
+function print_message()
+{
+  echo -e "\n$(tput setaf 2)> ${1}$(tput sgr0)"
+}
 
-Dir.chdir(home_dir)
-system(home_dir + '/bin/tim-update')
+print_message "Updating tim..."
+git pull --rebase
