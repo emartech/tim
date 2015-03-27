@@ -1,5 +1,5 @@
 # tim
-Tim is Money. Tim is Time. Time is Money.
+Tim is Time. Time is Money. Tim is Money.
 
 It's a one-click developer environment setup via a web interface
 
