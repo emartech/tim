@@ -66,7 +66,7 @@ function make_available_from_bash()
     then
         echo -e "\nsource ~/.tim/bin/tim-shell\n" >> ~/.bashrc || print_error_and_abort "Cannot patch ~/.bashrc to include tim-shell."
     fi
-    source ~/.tim/bin/tim-shell;
+    source ~/.tim/bin/tim-shell
 
     if ! command -v $TIM_COMMAND &>/dev/null
     then
@@ -87,4 +87,4 @@ create_default_configuration
 
 make_available_from_bash
 
-echo -e "\n$(tput setaf 5)Tim is ready to serve you. Have fun!\nTry starting a new console and typing \"tim\" to start. $CHEERS $(tput sgr0)\n"
+echo -e "\n$(tput setaf 5)Tim is ready to serve you. Have fun!\nTry typing \"tim\" to start it. $CHEERS $(tput sgr0)\n"
