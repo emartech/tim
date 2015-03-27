@@ -13,17 +13,35 @@ class TimRemotes
     @token = @options['github_token']
     @user = @options['github_user']
     @contents = Github::Client::Repos::Contents.new(oauth_token: @token)
+    @github = Github.new(oauth_token: @token, auto_pagination: true)
   end
 
 
 
   def list_repos
-    github = Github.new(oauth_token: @token, auto_pagination: true)
-    repo_names = (github.repos.list org: @user).map do |repo|
-      { name: repo.name, url: repo.html_url, description: repo.description  }
+    repo_names = (@github.repos.list org: @user).map do |repo|
+      { name: repo.name, url: repo.html_url, description: repo.description }
     end
     repo_names = repo_names.keep_if { |repo| has_tim?(repo[:name]) }
     puts repo_names.to_json
+  end
+
+
+
+  def setup(user, repo_name)
+    # Clone repository
+    ssh_url = (@github.repos.get user: user, repo: repo_name)['ssh_url']
+    projects_path = "#{File.expand_path(@options['projects_dir'])}/#{repo_name}"
+    output = %x[git clone #{ssh_url} #{projects_path} 2>&1]
+    success = $?.success?
+    return puts({ output: output, success: success }.to_json) if not success
+
+    # Run tim setup
+    Dir.chdir(projects_path)
+    output = %x[tim setup]
+    success = $?.success?
+    success = false if output == "Unknown command.\n"
+    puts({ output: output, success: success }.to_json)
   end
 
 
@@ -40,7 +58,7 @@ class TimRemotes
 
 end
 
-COMMANDS = %w(list)
+COMMANDS = %w(list setup)
 
 remotes = TimRemotes.new
 
@@ -49,8 +67,10 @@ case command
 when nil
   puts 'Available commands are:'
   COMMANDS.each { |command| puts "  #{command}" }
-when 'list'
+when COMMANDS[0]
   remotes.list_repos
+when COMMANDS[1]
+  remotes.setup(ARGV[0], ARGV[1])
 else
   puts 'Unknown command...'
   exit 1
