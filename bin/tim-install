@@ -62,15 +62,15 @@ function create_default_configuration()
 function make_available_from_bash()
 {
     print_message "Checking tim command availability."
-    if ! grep tim-shell ~/.bashrc &>/dev/null
+    if ! grep tim-shell ~/.bash_profile &>/dev/null
     then
-        echo -e "\nsource ~/.tim/bin/tim-shell\n" >> ~/.bashrc || print_error_and_abort "Cannot patch ~/.bashrc to include tim-shell."
+        echo -e "\nsource ~/.tim/bin/tim-shell\n" >> ~/.bash_profile || print_error_and_abort "Cannot patch ~/.bash_profile to include tim-shell."
     fi
     source ~/.tim/bin/tim-shell
 
     if ! command -v $TIM_COMMAND &>/dev/null
     then
-        print_error_and_abort "The tim command is not available, and fixing ~/.bashrc seems to be not working."
+        print_error_and_abort "The tim command is not available, and fixing ~/.bash_profile seems to be not working."
     fi
     print_ok
 }
