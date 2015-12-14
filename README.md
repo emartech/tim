@@ -10,7 +10,7 @@ To install tim:
  * run this command:
 
 ```sh
-$ . <(curl -fsSL https://raw.githubusercontent.com/emartech/tim/master/bin/tim-install)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/emartech/tim/master/bin/tim-install)"
 ```
 
 ###Tim commands
