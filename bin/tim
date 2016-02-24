@@ -25,7 +25,7 @@ end
 project = nil
 project_path = nil
 if WORK_DIR.match(options['projects_dir'])
-    project_path = WORK_DIR.slice(options['projects_dir'].length + 1, options['projects_dir'].length)
+    project_path = WORK_DIR.slice(options['projects_dir'].length + 1, WORK_DIR.length)
     project = project_path.split('/')[0]
     project_path = options['projects_dir'] + '/' + project
 end
@@ -40,7 +40,7 @@ case command
             if File.exist?(HOME_DIR + '/scripts/' + command)
                 exec(HOME_DIR + '/scripts/' + command, *ARGV)
             elsif
-                puts "Unknown command."
+                puts "Unknown command: " + project_path + '/.tim/' + command
                 exit 1
             end
         end
